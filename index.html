@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8" />
+  <title>Συντακτικό Αρχαίων Ελληνικών | Γ' Γυμνασίου</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #283593; /* Deep Indigo */
+      --primary-light: #5c6bc0;
+      --accent: #ff6f00; /* Amber */
+      --bg: #eceff1;
+      --text: #37474f;
+      --white: #ffffff;
+      --font-main: system-ui, -apple-system, sans-serif;
+      --font-ancient: "Palatino Linotype", "Times New Roman", serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: var(--font-main);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1rem;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* HEADER */
+    header {
+      background: var(--white);
+      padding: 1rem;
+      border-radius: 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      margin-bottom: 1.5rem;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .logo { height: 70px; width: auto; object-fit: contain; }
+    .header-text { text-align: left; }
+    
+    h1 { color: var(--primary); margin: 0; font-size: 1.6rem; line-height: 1.2; }
+    .subtitle { color: #546e7a; margin: 0.3rem 0 0 0; font-size: 0.95rem; font-weight: 600; }
+
+    h2 { color: var(--primary); margin-top: 0; border-bottom: 2px solid var(--primary-light); padding-bottom: 0.5rem; display: inline-block; }
+    h3 { color: #1a237e; margin-bottom: 0.5rem; }
+
+    /* SCREENS */
+    .screen {
+      display: none;
+      background: var(--white);
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      animation: fadeIn 0.4s ease;
+      margin-bottom: 1rem;
+    }
+    .screen.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* COMPONENTS */
+    .ancient { font-family: var(--font-ancient); font-size: 1.25rem; color: #b71c1c; font-weight: bold; }
+    
+    .concept-box {
+      background: #e8eaf6;
+      border-left: 5px solid var(--primary);
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: 4px;
+    }
+
+    /* THEORY CARDS */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .theory-card {
+      background: #fff;
+      border: 1px solid #cfd8dc;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    
+    .theory-header {
+      background: #f5f5f5;
+      padding: 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--primary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .theory-header:hover { background: #e8eaf6; }
+
+    .theory-body {
+      padding: 0 1rem;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, padding 0.3s ease;
+      background: #fff;
+      font-size: 0.95rem;
+    }
+
+    .theory-card.open .theory-body {
+      padding: 1rem;
+      max-height: 600px;
+      border-top: 1px solid #eee;
+      overflow-y: auto;
+    }
+
+    .example-box {
+      background: #fff3e0;
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      font-style: italic;
+      border-left: 3px solid var(--accent);
+    }
+
+    /* BUTTONS */
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    .btn:hover { background: #1a237e; transform: scale(1.02); }
+    .btn.secondary { background: #78909c; }
+    .btn.outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+    .btn.outline:hover { background: #e8eaf6; }
+
+    /* FILTERS */
+    .filter-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      justify-content: center;
+      background: #fafafa;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #eee;
+    }
+    .filter-btn {
+      background: #fff;
+      border: 1px solid #ccc;
+      color: #555;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .nav-row {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #eee;
+    }
+
+    /* GAME UI */
+    .quiz-options { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; }
+    .quiz-btn {
+      text-align: left; background: #f5f5f5; border: 1px solid #ddd;
+      color: #333; padding: 1rem; border-radius: 8px; font-size: 1.1rem; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .quiz-btn:hover { background: #e0e0e0; }
+    .quiz-btn.correct { background: #c8e6c9; border-color: #2e7d32; position: relative; }
+    .quiz-btn.correct::after { content: "✔"; position: absolute; right: 1rem; color: #2e7d32; }
+    .quiz-btn.wrong { background: #ffcdd2; border-color: #c62828; }
+
+    .feedback-box {
+      margin-top: 1rem; padding: 1rem; border-radius: 8px;
+      background: #fff3e0; color: #e65100; display: none; animation: fadeIn 0.3s;
+    }
+
+    .finish-nav {
+      display: flex; flex-direction: column; gap: 0.8rem; align-items: center; margin-top: 1rem;
+    }
+
+    footer {
+      text-align: center; padding: 0.5rem; background: #e8eaf6; color: #1a237e;
+      font-size: 0.8rem; border-top: 1px solid var(--primary-light);
+      width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="header-inner">
+      <img src="greek logo.png" alt="Λογότυπο" class="logo" />
+      <div class="header-text">
+        <h1>Δευτερεύουσες Προτάσεις</h1>
+        <p class="subtitle">Συντακτικό Αρχαίων Ελληνικών | Γ' Γυμνασίου</p>
+      </div>
+    </div>
+  </header>
+
+  <section id="screen-home" class="screen active">
+    <div style="text-align: center;">
+      <div style="font-size: 5rem; margin-bottom: 1rem;">🏛️</div>
+      <h2>Εισαγωγή</h2>
+      <p>
+        Εφαρμογή εξάσκησης για το Συντακτικό.
+      </p>
+      <p>
+        Μελετούμε τις δύο μεγάλες κατηγορίες δευτερευουσών προτάσεων:
+        <br><strong>Α. Ονοματικές</strong> (λειτουργούν ως ονόματα)
+        <br><strong>Β. Επιρρηματικές</strong> (λειτουργούν ως επιρρήματα)
+      </p>
+      <br>
+      <button class="btn" onclick="goToScreen('screen-theory-nominal')">Α. Θεωρία Ονοματικών ➜</button>
+    </div>
+  </section>
+
+  <section id="screen-theory-nominal" class="screen">
+    <h2>Α. Ονοματικές Δευτερεύουσες Προτάσεις</h2>
+    <p>Λειτουργούν ως <strong>Υποκείμενο</strong>, <strong>Αντικείμενο</strong> ή <strong>Επεξήγηση</strong>.</p>
+    
+    <div class="theory-grid">
+      
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">1. Ειδικές Προτάσεις <span>▼</span></div>
+        <div class="theory-body">
+          <p><strong>Εισαγωγή:</strong> Με τους συνδέσμους <em>ὅτι</em> (πραγματικό γεγονός) ή <em>ὡς</em> (υποκειμενική γνώμη).</p>
+          <p><strong>Εξάρτηση:</strong> Από ρήματα λεκτικά (λέω), γνωστικά (γνωρίζω), αισθητικά (αισθάνομαι, βλέπω).</p>
+          <div class="example-box">
+            <span class="ancient">Λέγω ὅτι πολλαὶ καὶ καλαὶ ἐλπίδες ἡμῖν εἰσι.</span><br>
+            (Λειτουργεί ως Αντικείμενο στο <em>Λέγω</em>)
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">2. Ενδοιαστικές Προτάσεις <span>▼</span></div>
+        <div class="theory-body">
+          <p><strong>Σημασία:</strong> Δηλώνουν φόβο ή δισταγμό.</p>
+          <p><strong>Εισαγωγή:</strong> Με το <em>μή</em> (φόβος μήπως γίνει κάτι) ή <em>μὴ οὐ</em> (φόβος μήπως ΔΕΝ γίνει).</p>
+          <div class="example-box">
+            <span class="ancient">Φόβος ἐστὶ μὴ ἡττηθῶμεν.</span><br>
+            (Λειτουργεί ως Υποκείμενο στο <em>Φόβος ἐστί</em>)
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">3. Πλάγιες Ερωτηματικές <span>▼</span></div>
+        <div class="theory-body">
+          <p><strong>Σημασία:</strong> Ερωτήσεις μεταφερμένες σε πλάγιο λόγο. Εξαρτώνται από ρήματα όπως <em>ρωτώ, απορώ, γνωρίζω</em>.</p>
+          <p><strong>Εισαγωγή:</strong> Με ερωτηματικές αντωνυμίες (<em>τίς, ὅστις</em>), επιρρήματα (<em>πῶς</em>) ή το μόριο <em>εἰ</em> (αν).</p>
+          <div class="example-box">
+            <span class="ancient">Ἀπορῶ εἰ διδακτόν ἐστιν ἡ ἀρετή.</span><br>
+            (Λειτουργεί ως Αντικείμενο στο <em>Ἀπορῶ</em>)
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">4. Ονοματικές Αναφορικές <span>▼</span></div>
+        <div class="theory-body">
+          <p><strong>Σημασία:</strong> Χρησιμοποιούνται στη θέση ουσιαστικού ή επιθέτου.</p>
+          <p><strong>Εισαγωγή:</strong> Με αναφορικές αντωνυμίες (<em>ὅς, ὅστις, ὅσπερ</em>).</p>
+          <div class="example-box">
+            <span class="ancient">Οὗτός ἐστιν ὃς ἀπέκτεινε τοὺς στρατηγούς.</span><br>
+            (Λειτουργεί ως Κατηγορούμενο/Προσδιορισμός)
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav-row">
+      <button class="btn secondary" onclick="goToScreen('screen-home')">🏠 Αρχική</button>
+      <button class="btn" onclick="goToScreen('screen-game1')">Ασκήσεις Ονοματικών 🎮</button>
+    </div>
+  </section>
+
+  <section id="screen-game1" class="screen">
+    <h2>📝 Ασκήσεις: Ονοματικές Προτάσεις</h2>
+    <p>Επίλεξε κατηγορία για εξάσκηση:</p>
+    
+    <div class="filter-container" id="filter-g1">
+      <button class="filter-btn active" onclick="filterG1('all', this)">🔀 Μίξη Όλων</button>
+      <button class="filter-btn" onclick="filterG1('eidiki', this)">Ειδικές</button>
+      <button class="filter-btn" onclick="filterG1('endoiastiki', this)">Ενδοιαστικές</button>
+      <button class="filter-btn" onclick="filterG1('plagia', this)">Πλάγιες Ερωτ.</button>
+      <button class="filter-btn" onclick="filterG1('anaforiki', this)">Αναφορικές</button>
+    </div>
+
+    <div class="concept-box" style="text-align:center;">
+      <div id="g1-container">
+        <p id="g1-sentence" class="ancient" style="font-size: 1.3rem;"></p>
+        <div id="g1-options" class="quiz-options"></div>
+        <div id="g1-feedback" class="feedback-box"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <div id="g1-score" style="font-weight:bold; font-size:1.2rem; align-self:center;">Σκορ: 0</div>
+      <button id="btn-next-g1" class="btn outline" onclick="nextG1Question()" style="display:none;">Επόμενη Πρόταση ➜</button>
+      <button class="btn primary" id="g1-next-level-btn" onclick="goToScreen('screen-theory-adverbial')">Β. Θεωρία Επιρρηματικών ➜</button>
+    </div>
+  </section>
+
+
+  <section id="screen-theory-adverbial" class="screen">
+    <h2>Β. Επιρρηματικές Δευτερεύουσες Προτάσεις</h2>
+    <p>Λειτουργούν ως επιρρηματικοί προσδιορισμοί (δηλώνουν χρόνο, αιτία, σκοπό κ.ά.).</p>
+
+    <div class="theory-grid">
+      
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">1. Αιτιολογικές (Αιτία) <span>▼</span></div>
+        <div class="theory-body">
+          <p>Εισάγονται με: <em>ὅτι, ὡς, ἐπεί, διότι</em>. Εξαρτώνται συχνά από ρήματα ψυχικού πάθους (χαρά, λύπη, θυμός) ή κρίσης.</p>
+          <div class="example-box">
+            <span class="ancient">Ἀθηναῖοι ἐνόμιζον ἡττᾶσθαι, ὅτι οὐ πολὺ ἐνίκων.</span>
+            (επειδή πράγματι δεν νικούσαν κατά κράτος)
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">2. Τελικές (Σκοπός) <span>▼</span></div>
+        <div class="theory-body">
+          <p>Εισάγονται με: <em>ἵνα, ὅπως, ὡς</em>. Εξαρτώνται συνήθως από ρήματα κίνησης ή σκόπιμης ενέργειας.</p>
+          <div class="example-box">
+            <span class="ancient">Βασιλεὺς αἱρεῖται, οὐχ ἵνα ἑαυτοῦ καλῶς ἐπιμελῆται...</span>
+            (όχι για να φροντίζει τον εαυτό του, αλλά τους άλλους)
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">3. Συμπερασματικές (Αποτέλεσμα) <span>▼</span></div>
+        <div class="theory-body">
+          <p>Εισάγονται με: <em>ὥστε, ὡς</em>. Συχνά προηγείται στην κύρια πρόταση δεικτική λέξη όπως <em>οὕτως, τοσοῦτος</em>.</p>
+          <div class="example-box">
+            <span class="ancient">Τὴν αὑτῶν δύναμιν τοσαύτην ἐπέδειξαν, ὥσθ’ ὁ μέγας βασιλεὺς...</span>
+            (ώστε ο μεγάλος βασιλιάς...)
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">4. Υποθετικές (Προϋπόθεση) <span>▼</span></div>
+        <div class="theory-body">
+          <p>Εκφράζουν υπόθεση. Εισάγονται με: <em>εἰ, ἐάν, ἄν, ἤν</em>.</p>
+          <div class="example-box">
+            <span class="ancient">Εἰ εἰσὶ βωμοί, εἰσὶ καὶ θεοί.</span>
+            (Αν υπάρχουν βωμοί, υπάρχουν και θεοί)
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">5. Χρονικές (Χρόνος) <span>▼</span></div>
+        <div class="theory-body">
+          <p>Δηλώνουν πότε γίνεται κάτι. Εισάγονται με: <em>ὅτε, ἐπεί, ἕως, πρίν</em> κ.ά.</p>
+          <div class="example-box">
+            <span class="ancient">Ὅτε αὐτὴ ἡ μάχη ἐγίγνετο, Τισσαφέρνης ἐν Σάρδεσιν ἦν.</span>
+            (Όταν γινόταν αυτή η μάχη...)
+          </div>
+        </div>
+      </div>
+
+      <div class="theory-card" onclick="toggleTheory(this)">
+        <div class="theory-header">6. Εναντιωματικές (Αντίθεση) <span>▼</span></div>
+        <div class="theory-body">
+          <p>Δηλώνουν εναντίωση ή παραχώρηση. Εισάγονται με: <em>εἰ καί, καὶ εἰ</em> (= αν και).</p>
+          <div class="example-box">
+            <span class="ancient">Φήσουσι γὰρ δή με σοφὸν εἶναι, εἰ καὶ μή εἰμι.</span>
+            (αν και δεν είμαι)
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="nav-row">
+      <button class="btn secondary" onclick="goToScreen('screen-game1')">⬅ Πίσω</button>
+      <button class="btn" onclick="goToScreen('screen-game2')">Ασκήσεις Επιρρηματικών 🎮</button>
+    </div>
+  </section>
+
+  <section id="screen-game2" class="screen">
+    <h2>📝 Ασκήσεις: Επιρρηματικές Προτάσεις</h2>
+    <p>Επίλεξε κατηγορία για εξάσκηση:</p>
+
+    <div class="filter-container" id="filter-g2">
+      <button class="filter-btn active" onclick="filterG2('all', this)">🔀 Μίξη Όλων</button>
+      <button class="filter-btn" onclick="filterG2('aitiologiki', this)">Αιτιολογικές</button>
+      <button class="filter-btn" onclick="filterG2('teliki', this)">Τελικές</button>
+      <button class="filter-btn" onclick="filterG2('symperasmatiki', this)">Συμπερασματικές</button>
+      <button class="filter-btn" onclick="filterG2('ypothetiki', this)">Υποθετικές</button>
+      <button class="filter-btn" onclick="filterG2('xroniki', this)">Χρονικές</button>
+      <button class="filter-btn" onclick="filterG2('enantiomatiki', this)">Εναντιωματικές</button>
+    </div>
+    
+    <div class="concept-box" style="text-align:center;">
+      <div id="g2-container">
+        <p id="g2-sentence" class="ancient" style="font-size: 1.3rem;"></p>
+        <div id="g2-options" class="quiz-options"></div>
+        <div id="g2-feedback" class="feedback-box"></div>
+      </div>
+    </div>
+
+    <div class="nav-row">
+      <div id="g2-score" style="font-weight:bold; font-size:1.2rem; align-self:center;">Σκορ: 0</div>
+      <button id="btn-next-g2" class="btn outline" onclick="nextG2Question()" style="display:none;">Επόμενη Πρόταση ➜</button>
+      <button class="btn primary" id="g2-next-level-btn" onclick="goToScreen('screen-quiz')">Τελικό Κουίζ 🏆</button>
+    </div>
+  </section>
+
+  <section id="screen-quiz" class="screen">
+    <h2>🏆 Τελικό Κουίζ</h2>
+    <div id="quiz-container">
+      <h3 id="quiz-q-num">Ερώτηση 1/5</h3>
+      <p id="quiz-q-text" style="font-weight: bold; font-size: 1.1rem; margin-bottom:1.5rem;"></p>
+      <div id="quiz-options-list" class="quiz-options"></div>
+      <div id="quiz-feedback" class="feedback-box"></div>
+    </div>
+
+    <div id="quiz-result" style="display:none; text-align: center;">
+      <div style="font-size: 4rem; margin-bottom:1rem;">🎉</div>
+      <h3>Συγχαρητήρια!</h3>
+      <p>Ολοκλήρωσες την επανάληψη στο Συντακτικό Γ' Γυμνασίου.</p>
+      <p id="final-score-display" style="font-size:1.2rem; margin:1rem 0;"></p>
+      
+      <div class="finish-nav">
+        <button class="btn outline" onclick="goToScreen('screen-home')">🏠 Αρχική Σελίδα</button>
+        <button class="btn secondary" onclick="location.reload()">🔄 Επανεκκίνηση Εφαρμογής</button>
+      </div>
+    </div>
+
+    <div class="nav-row" id="quiz-nav">
+      <button class="btn secondary" onclick="goToScreen('screen-game2')">⬅ Πίσω</button>
+      <button id="btn-next-quiz" class="btn primary" onclick="nextQuizItem()">Επόμενη ερώτηση ➜</button>
+    </div>
+  </section>
+</div>
+
+<footer>
+  ✨✍️ Δημιουργία: Παναγιώτης Δόμβρος, Εκπαιδευτικός Αγγλικών-Θεατρολόγος, Με την Επιφύλαξη Παντός Δικαιώματος ✍️✨
+</footer>
+
+<script>
+  /* -----------------------------------------------------------------
+     1. DATA SETS - DEFINED FIRST to avoid loading errors 
+     ----------------------------------------------------------------- */
+
+  // NOMINAL EXERCISES POOL
+  const nominalPool = [
+    // Ειδικές
+    { text: "Φημὶ <u>ὅτι καὶ πρὸ ἐμοῦ τοῦτο τὸ φρόνημα εἶχεν ἡ πόλις</u>.", type: "eidiki", hint: "Σε ρήμα λεκτικό (Φημί) με 'ὅτι'.", correct: 0, options: ["Ειδική (Αντικείμενο)", "Ενδοιαστική", "Ειδική (Υποκείμενο)"] },
+    { text: "Λέγουσιν οἱ σοφισταὶ <u>ὡς οὐδὲν δέονται χρημάτων</u>.", type: "eidiki", hint: "Σε ρήμα λεκτικό (Λέγουσιν) με 'ὡς'.", correct: 0, options: ["Ειδική (Αντικείμενο)", "Ειδική (Υποκείμενο)", "Αιτιολογική"] },
+    { text: "Σεύθης λέγει <u>ὅτι οὐδενὶ ἂν ἀπιστήσαι Ἀθηναίων</u>.", type: "eidiki", hint: "Σε ρήμα λεκτικό (Λέγει).", correct: 2, options: ["Πλάγια Ερωτηματική", "Αναφορική", "Ειδική (Αντικείμενο)"] },
+    { text: "Δῆλόν ἐστιν <u>ὅτι οὐκ ἂν προὔλεγεν</u>.", type: "eidiki", hint: "Σε απρόσωπο ρήμα (Δῆλόν ἐστιν).", correct: 1, options: ["Ειδική (Αντικείμενο)", "Ειδική (Υποκείμενο)", "Πλάγια Ερωτηματική"] },
+    { text: "Παρὰ πάντων ὁμολογεῖται <u>ὡς τὰ βέλτιστα εἰπὼν ἄδικα πάσχει</u>.", type: "eidiki", hint: "Σε απρόσωπο (ὁμολογεῖται).", correct: 1, options: ["Ειδική (Αντικείμενο)", "Ειδική (Υποκείμενο)", "Αιτιολογική"] },
+    { text: "Γιγνώσκεις <u>ὅτι σὺ εἶ ὁ μωρός</u>;", type: "eidiki", hint: "Σε γνωστικό ρήμα.", correct: 0, options: ["Ειδική (Αντικείμενο)", "Πλάγια Ερωτηματική", "Ειδική (Υποκείμενο)"] },
+    
+    // Ενδοιαστικές
+    { text: "Ξενοφῶν ἔδεισε <u>μὴ κακὰ γένοιτο τῇ πόλει</u>.", type: "endoiastiki", hint: "Σε ρήμα φόβου (ἔδεισε).", correct: 1, options: ["Ειδική", "Ενδοιαστική (Αντικείμενο)", "Πλάγια Ερωτηματική"] },
+    { text: "Φόβος ἐστὶ <u>μὴ ἡττηθῶμεν</u>.", type: "endoiastiki", hint: "Σε απρόσωπη έκφραση φόβου.", correct: 2, options: ["Ενδοιαστική (Αντικείμενο)", "Ειδική", "Ενδοιαστική (Υποκείμενο)"] },
+    { text: "Ὅρα <u>μὴ περὶ τοῖς φιλτάτοις κινδυνεύῃς</u>.", type: "endoiastiki", hint: "Σε ρήμα προσοχής/φόβου (Ὅρα).", correct: 0, options: ["Ενδοιαστική", "Τελική", "Συμπερασματική"] },
+    { text: "Οὐ τοῦτο ἐφοβεῖτο, <u>μή τινες πορεύσοιντο ἐπὶ τὴν δύναμιν</u>.", type: "endoiastiki", hint: "Σε ρήμα φόβου (ἐφοβεῖτο).", correct: 1, options: ["Αναφορική", "Ενδοιαστική (Επεξήγηση)", "Υποθετική"] },
+    { text: "Κλέαρχος οὐκ ἤθελεν ἀποσπάσαι, φοβούμενος <u>μὴ κυκλωθείη</u>.", type: "endoiastiki", hint: "Σε μετοχή φόβου.", correct: 2, options: ["Ειδική", "Αιτιολογική", "Ενδοιαστική"] },
+
+    // Πλάγιες Ερωτηματικές
+    { text: "Πρωταγόρας ἐρωτᾷ <u>εἰ οὐκ αἰσχύνομαι</u>.", type: "plagia", hint: "Σε ρήμα ερώτησης (ἐρωτᾷ).", correct: 0, options: ["Πλάγια Ερωτηματική", "Υποθετική", "Ειδική"] },
+    { text: "Ἀπορῶ <u>εἰ διδακτόν ἐστιν ἡ ἀρετή</u>.", type: "plagia", hint: "Σε ρήμα απορίας.", correct: 1, options: ["Ενδοιαστική", "Πλάγια Ερωτηματική", "Ειδική"] },
+    { text: "Ἠρώτα αὐτὸν <u>πόσον χρυσίον ἔχοι</u>.", type: "plagia", hint: "Σε ρήμα ερώτησης (Ἠρώτα).", correct: 2, options: ["Αναφορική", "Ειδική", "Πλάγια Ερωτηματική"] },
+    { text: "Οὐ δῆλόν ἐστι τῷ στρατηγῷ <u>εἰ συμφέρει στρατηγεῖν</u>.", type: "plagia", hint: "Σε απρόσωπο.", correct: 0, options: ["Πλάγια Ερωτηματική", "Ειδική", "Υποθετική"] },
+    { text: "Ἐγὼ γὰρ οὐκ οἶδα <u>εἰ τοῦτο ἀληθές ἐστιν ἢ μή</u>.", type: "plagia", hint: "Σε ρήμα γνώσης (Οὐκ οἶδα).", correct: 1, options: ["Ειδική", "Πλάγια Ερωτηματική", "Αιτιολογική"] },
+    
+    // Αναφορικές
+    { text: "<u>Ὃν οἱ θεοὶ φιλοῦσιν</u> ἀποθνῄσκει νέος.", type: "anaforiki", hint: "Στη θέση του Υποκειμένου.", correct: 2, options: ["Ειδική", "Πλάγια Ερωτηματική", "Ονοματική Αναφορική"] },
+    { text: "<u>Ὃ μέλλεις ποιεῖν</u> μὴ λέγε.", type: "anaforiki", hint: "Αντικείμενο στο 'λέγε'.", correct: 0, options: ["Ονοματική Αναφορική", "Πλάγια Ερωτηματική", "Ειδική"] },
+    { text: "<u>Οὓς ἂν βούλῃ ποιήσασθαι φίλους</u>, ἀγαθόν τι λέγε.", type: "anaforiki", hint: "Αντικείμενο στο 'λέγε'.", correct: 1, options: ["Υποθετική", "Ονοματική Αναφορική", "Ειδική"] },
+    { text: "Ἦν τις Ξενοφῶν, <u>ὃς οὔτε στρατηγὸς ὢν συνηκολούθει</u>.", type: "anaforiki", hint: "Προσδιορίζει το 'Ξενοφῶν'.", correct: 0, options: ["Αναφορική (Προσδιοριστική)", "Ειδική", "Χρονική"] },
+    { text: "<u>Ὅστις ἐθέλει ὀπίσω μου ἐλθεῖν</u>, ἀπαρνησάσθω ἑαυτόν.", type: "anaforiki", hint: "Υποκείμενο.", correct: 2, options: ["Υποθετική", "Ειδική", "Ονοματική Αναφορική"] }
+  ];
+
+  // ADVERBIAL EXERCISES POOL
+  const adverbialPool = [
+    // Αιτιολογικές
+    { text: "Οἱ στρατηγοὶ ἐθαύμαζον <u>ὅτι Κῦρος οὐ φαίνοιτο</u>.", type: "aitiologiki", hint: "Δηλώνει την αιτία της απορίας.", correct: 0, options: ["Αιτιολογική", "Ειδική", "Τελική"] },
+    { text: "Χαίρω <u>ὅτι εὐδοκιμεῖς</u>.", type: "aitiologiki", hint: "Δηλώνει την αιτία της χαράς.", correct: 1, options: ["Ειδική", "Αιτιολογική", "Συμπερασματική"] },
+    { text: "Μὴ θαυμάζετέ μου, <u>ὅτι χαλεπῶς φέρω</u>.", type: "aitiologiki", hint: "Αιτία (επειδή...).", correct: 2, options: ["Τελική", "Ενδοιαστική", "Αιτιολογική"] },
+    { text: "Ἐγὼ συμβουλεύσαιμι ἂν ἀπελθεῖν, <u>ἐπεὶ οὐδένα ἂν εὕροιμεν βελτίω</u>.", type: "aitiologiki", hint: "Αιτία (αφού...).", correct: 0, options: ["Αιτιολογική", "Χρονική", "Υποθετική"] },
+
+    // Τελικές
+    { text: "Μὴ μέλλωμεν, <u>ἵνα μὴ ὁ καιρὸς παρέλθῃ</u>.", type: "teliki", hint: "Δηλώνει σκοπό (για να μην...).", correct: 1, options: ["Συμπερασματική", "Τελική", "Χρονική"] },
+    { text: "Θράσυλλος ἔπλευσεν, <u>ἵνα αἰτήσειε ναῦς</u>.", type: "teliki", hint: "Σκοπός κίνησης.", correct: 0, options: ["Τελική", "Αιτιολογική", "Ενδοιαστική"] },
+    { text: "Σόλων ἀπεδήμησεν, <u>ἵνα μή τινα τῶν νόμων λύσαιεν</u>.", type: "teliki", hint: "Σκοπός (για να μην...).", correct: 1, options: ["Ενδοιαστική", "Τελική", "Συμπερασματική"] },
+    { text: "Κῦρος ἐνόμιζε φίλων δεῖσθαι, <u>ὡς συνεργοὺς ἔχοι</u>.", type: "teliki", hint: "Σκοπός (για να έχει...).", correct: 2, options: ["Αιτιολογική", "Συμπερασματική", "Τελική"] },
+
+    // Συμπερασματικές
+    { text: "Οἱ τριάκοντα πᾶν ἐποίησαν, <u>ὥστε μὴ δοῦναι δίκην</u>.", type: "symperasmatiki", hint: "Δηλώνει αποτέλεσμα (ώστε).", correct: 2, options: ["Τελική", "Αιτιολογική", "Συμπερασματική"] },
+    { text: "Τοιαῦτα πεποίηκεν, <u>ὥστε δικαιότερον μισήσαιτε</u>.", type: "symperasmatiki", hint: "Αποτέλεσμα πράξης.", correct: 0, options: ["Συμπερασματική", "Τελική", "Χρονική"] },
+    { text: "Ὅπλα κατεσκεύαζον, <u>ὥστε τὴν πόλιν ἂν ἡγήσω ἐργαστήριον</u>.", type: "symperasmatiki", hint: "Συμπέρασμα/Αποτέλεσμα.", correct: 1, options: ["Ειδική", "Συμπερασματική", "Τελική"] },
+    { text: "Ἐπιπίπτει χιὼν ἄπλετος, <u>ὥστε ἀπέκρυψε καὶ τὰ ὅπλα</u>.", type: "symperasmatiki", hint: "Τόσο πολύ χιόνι ώστε...", correct: 0, options: ["Συμπερασματική", "Τελική", "Αιτιολογική"] },
+
+    // Υποθετικές
+    { text: "<u>Εἰ εἰσὶ βωμοί</u>, εἰσὶ καὶ θεοί.", type: "ypothetiki", hint: "Εισάγεται με 'Εἰ' (υπόθεση).", correct: 0, options: ["Υποθετική", "Χρονική", "Εναντιωματική"] },
+    { text: "<u>Εἰ μὴ ὑμεῖς ἤλθετε</u>, ἐπορευόμεθα ἂν ἐπὶ βασιλέα.", type: "ypothetiki", hint: "Υπόθεση (Αν δεν...).", correct: 1, options: ["Εναντιωματική", "Υποθετική", "Χρονική"] },
+    { text: "<u>Ἢν ἐθέλωμεν ἀποθνῄσκειν</u>, εὐδοκιμήσομεν.", type: "ypothetiki", hint: "Εισάγεται με 'Ἢν' (Εάν).", correct: 2, options: ["Τελική", "Χρονική", "Υποθετική"] },
+    { text: "<u>Ἐάν τις φανερὸς γένηται κλέπτων</u>, θάνατός ἐστιν ἡ ζημία.", type: "ypothetiki", hint: "Υπόθεση (Εάν...).", correct: 0, options: ["Υποθετική", "Ειδική", "Χρονική"] },
+
+    // Χρονικές
+    { text: "<u>Ἐπειδὰν ἔλθωσιν</u>, ἕξομεν τὰ ἐπιτήδεια.", type: "xroniki", hint: "Δηλώνει πότε (όταν).", correct: 1, options: ["Υποθετική", "Χρονική", "Αιτιολογική"] },
+    { text: "Δεῖ ὑμᾶς ἐξηγεῖσθαι, <u>ἕως ἂν οἱ ἄλλοι ἥκωσιν</u>.", type: "xroniki", hint: "Δηλώνει χρόνο (μέχρι να...).", correct: 0, options: ["Χρονική", "Τελική", "Συμπερασματική"] },
+    { text: "Oὐ καταβρέχεσθε, <u>ὅταν βρέχῃ</u>;", type: "xroniki", hint: "Δηλώνει χρόνο.", correct: 2, options: ["Υποθετική", "Αιτιολογική", "Χρονική"] },
+    { text: "Ἐκέλευσε πορεύεσθαι ἡσύχως, <u>ἕως ἄγγελος ἔλθοι</u>.", type: "xroniki", hint: "Μέχρι να...", correct: 1, options: ["Τελική", "Χρονική", "Συμπερασματική"] },
+
+    // Εναντιωματικές
+    { text: "Φήσουσι γὰρ δή με σοφὸν εἶναι, <u>εἰ καὶ μή εἰμι</u>.", type: "enantiomatiki", hint: "Αν και δεν είμαι...", correct: 2, options: ["Υποθετική", "Χρονική", "Εναντιωματική"] },
+    { text: "<u>Εἰ καὶ χρημάτων εὐποροῦμεν</u>, οὐκ εὐτυχοῦμεν.", type: "enantiomatiki", hint: "Αν και έχουμε χρήματα...", correct: 0, options: ["Εναντιωματική", "Υποθετική", "Αιτιολογική"] },
+    { text: "Γελᾷ ὁ μωρός, <u>κἄν τι μὴ γελοῖον ᾖ</u>.", type: "enantiomatiki", hint: "Ακόμα και αν...", correct: 1, options: ["Χρονική", "Εναντιωματική", "Τελική"] },
+    { text: "<u>Κἂν σὺ μὴ θέλῃς</u>, οἱ θεοὶ οὕτω βουλήσονται.", type: "enantiomatiki", hint: "Και αν ακόμη...", correct: 2, options: ["Υποθετική", "Χρονική", "Εναντιωματική"] }
+  ];
+
+  // FINAL QUIZ (MIXED)
+  const quizData = [
+    { q: "Ποιος σύνδεσμος εισάγει Τελικές Προτάσεις;", options: ["ὅτι", "ὥστε", "ἵνα"], correct: 2 },
+    { q: "Οι Ειδικές Προτάσεις λειτουργούν συνήθως ως:", options: ["Επιρρηματικοί Προσδιορισμοί", "Αντικείμενα/Υποκείμενα", "Κύριες Προτάσεις"], correct: 1 },
+    { q: "Το 'Φόβος εστί μή...' εισάγει:", options: ["Ενδοιαστική Πρόταση", "Αιτιολογική Πρόταση", "Υποθετική Πρόταση"], correct: 0 },
+    { q: "Η πρόταση 'ὥστε μὴ δοῦναι δίκην' είναι:", options: ["Συμπερασματική", "Τελική", "Αιτιολογική"], correct: 0 },
+    { q: "Ποια πρόταση δηλώνει εναντίωση;", options: ["Ότε ήλθεν...", "Εί και μη ειμί...", "Εάν έλθης..."], correct: 1 }
+  ];
+
+  /* -----------------------------------------------------------------
+     2. UI LOGIC
+     ----------------------------------------------------------------- */
+  
+  function toggleTheory(element) {
+    element.classList.toggle('open');
+  }
+
+  function goToScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+    
+    if(id === 'screen-game1') {
+      // Select default filter 'all'
+      const defaultBtn = document.querySelector('#filter-g1 button.active') || document.querySelector('#filter-g1 button');
+      filterG1('all', defaultBtn);
+    }
+    if(id === 'screen-game2') {
+      const defaultBtn = document.querySelector('#filter-g2 button.active') || document.querySelector('#filter-g2 button');
+      filterG2('all', defaultBtn);
+    }
+    if(id === 'screen-quiz') initQuiz();
+  }
+
+  /* -----------------------------------------------------------------
+     3. GAME LOGIC
+     ----------------------------------------------------------------- */
+
+  // GAME 1: NOMINAL
+  let g1List = [];
+  let g1Idx = 0;
+  let g1Score = 0;
+
+  function filterG1(type, btn) {
+    // Visuals
+    document.querySelectorAll('#filter-g1 .filter-btn').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+
+    // Filter data
+    if (type === 'all') {
+      g1List = [...nominalPool].sort(() => 0.5 - Math.random());
+    } else {
+      g1List = nominalPool.filter(item => item.type === type).sort(() => 0.5 - Math.random());
+    }
+    
+    // Reset Variables
+    g1Idx = 0;
+    g1Score = 0;
+    document.getElementById('g1-score').textContent = "Σκορ: 0";
+    document.getElementById('g1-next-level-btn').style.display = 'none';
+    document.getElementById('btn-next-g1').style.display = 'inline-flex';
+    
+    // Reset UI elements visibility
+    const container = document.getElementById('g1-container');
+    const sentence = document.getElementById('g1-sentence');
+    const options = document.getElementById('g1-options');
+    const oldNav = container.querySelector('.finish-nav');
+    if(oldNav) oldNav.remove();
+
+    sentence.style.display = 'block';
+    options.style.display = 'flex';
+
+    loadG1Question();
+  }
+
+  function loadG1Question() {
+    const container = document.getElementById('g1-container');
+    const sentence = document.getElementById('g1-sentence');
+    const optionsDiv = document.getElementById('g1-options');
+    const feedback = document.getElementById('g1-feedback');
+    feedback.style.display = 'none';
+    optionsDiv.innerHTML = '';
+
+    if (!g1List || g1List.length === 0) {
+      sentence.innerHTML = "Δεν υπάρχουν ερωτήσεις σε αυτή την κατηγορία.";
+      optionsDiv.style.display = 'none';
+      document.getElementById('btn-next-g1').style.display = 'none';
+      return;
+    }
+
+    if (g1Idx >= g1List.length) {
+      sentence.style.display = 'none';
+      optionsDiv.style.display = 'none';
+      document.getElementById('btn-next-g1').style.display = 'none';
+      
+      // Create finish navigation
+      const finishNav = document.createElement('div');
+      finishNav.className = 'finish-nav';
+      finishNav.innerHTML = `
+        <span style="color:var(--primary); font-weight:bold; font-size:1.2rem;">🎉 Μπράβο! Τέλειωσες αυτό το σετ.</span>
+        <button class="btn secondary" onclick="goToScreen('screen-game1')">🔄 Άλλη Κατηγορία</button>
+        <button class="btn" onclick="goToScreen('screen-theory-adverbial')">Επόμενη Ενότητα ➜</button>
+        <button class="btn outline" onclick="goToScreen('screen-home')">🏠 Αρχική</button>
+      `;
+      container.appendChild(finishNav);
+      return;
+    }
+
+    const data = g1List[g1Idx];
+    sentence.innerHTML = data.text;
+
+    data.options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-btn';
+      btn.textContent = opt;
+      btn.onclick = () => checkG1Answer(idx, data);
+      optionsDiv.appendChild(btn);
+    });
+  }
+
+  function checkG1Answer(selectedIdx, data) {
+    const feedback = document.getElementById('g1-feedback');
+    const allBtns = document.getElementById('g1-options').children;
+    for(let b of allBtns) b.disabled = true;
+
+    if (selectedIdx === data.correct) {
+      allBtns[selectedIdx].classList.add('correct');
+      feedback.innerHTML = "Σωστά! " + data.hint;
+      feedback.style.background = '#c8e6c9';
+      feedback.style.color = '#2e7d32';
+      g1Score++;
+      document.getElementById('g1-score').textContent = `Σκορ: ${g1Score}`;
+    } else {
+      allBtns[selectedIdx].classList.add('wrong');
+      allBtns[data.correct].classList.add('correct');
+      feedback.innerHTML = "Λάθος. " + data.hint;
+      feedback.style.background = '#ffcdd2';
+      feedback.style.color = '#c62828';
+    }
+    feedback.style.display = 'block';
+  }
+
+  function nextG1Question() {
+    if (g1Idx < g1List.length) {
+      g1Idx++;
+      loadG1Question();
+    }
+  }
+
+  // GAME 2: ADVERBIAL LOGIC
+  let g2List = [];
+  let g2Idx = 0;
+  let g2Score = 0;
+
+  function filterG2(type, btn) {
+    document.querySelectorAll('#filter-g2 .filter-btn').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+
+    if (type === 'all') {
+      g2List = [...adverbialPool].sort(() => 0.5 - Math.random());
+    } else {
+      g2List = adverbialPool.filter(item => item.type === type).sort(() => 0.5 - Math.random());
+    }
+    
+    g2Idx = 0;
+    g2Score = 0;
+    document.getElementById('g2-score').textContent = "Σκορ: 0";
+    document.getElementById('g2-next-level-btn').style.display = 'none';
+    document.getElementById('btn-next-g2').style.display = 'inline-flex';
+    
+    const container = document.getElementById('g2-container');
+    const sentence = document.getElementById('g2-sentence');
+    const options = document.getElementById('g2-options');
+    const oldNav = container.querySelector('.finish-nav');
+    if(oldNav) oldNav.remove();
+
+    sentence.style.display = 'block';
+    options.style.display = 'flex';
+
+    loadG2Question();
+  }
+
+  function loadG2Question() {
+    const container = document.getElementById('g2-container');
+    const sentence = document.getElementById('g2-sentence');
+    const optionsDiv = document.getElementById('g2-options');
+    const feedback = document.getElementById('g2-feedback');
+    feedback.style.display = 'none';
+    optionsDiv.innerHTML = '';
+
+    if (!g2List || g2List.length === 0) {
+      sentence.innerHTML = "Δεν υπάρχουν ερωτήσεις.";
+      optionsDiv.style.display = 'none';
+      document.getElementById('btn-next-g2').style.display = 'none';
+      return;
+    }
+
+    if (g2Idx >= g2List.length) {
+      sentence.style.display = 'none';
+      optionsDiv.style.display = 'none';
+      document.getElementById('btn-next-g2').style.display = 'none';
+
+      const finishNav = document.createElement('div');
+      finishNav.className = 'finish-nav';
+      finishNav.innerHTML = `
+        <span style="color:var(--primary); font-weight:bold; font-size:1.2rem;">🎉 Μπράβο! Τέλειωσες αυτό το σετ.</span>
+        <button class="btn secondary" onclick="goToScreen('screen-game2')">🔄 Άλλη Κατηγορία</button>
+        <button class="btn" onclick="goToScreen('screen-quiz')">Τελικό Κουίζ 🏆</button>
+        <button class="btn outline" onclick="goToScreen('screen-home')">🏠 Αρχική</button>
+      `;
+      container.appendChild(finishNav);
+      return;
+    }
+
+    const data = g2List[g2Idx];
+    sentence.innerHTML = data.text;
+
+    data.options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-btn';
+      btn.textContent = opt;
+      btn.onclick = () => checkG2Answer(idx, data);
+      optionsDiv.appendChild(btn);
+    });
+  }
+
+  function checkG2Answer(selectedIdx, data) {
+    const feedback = document.getElementById('g2-feedback');
+    const allBtns = document.getElementById('g2-options').children;
+    for(let b of allBtns) b.disabled = true;
+
+    if (selectedIdx === data.correct) {
+      allBtns[selectedIdx].classList.add('correct');
+      feedback.innerHTML = "Σωστά! " + data.hint;
+      feedback.style.background = '#c8e6c9';
+      feedback.style.color = '#2e7d32';
+      g2Score++;
+      document.getElementById('g2-score').textContent = `Σκορ: ${g2Score}`;
+    } else {
+      allBtns[selectedIdx].classList.add('wrong');
+      allBtns[data.correct].classList.add('correct');
+      feedback.innerHTML = "Λάθος. " + data.hint;
+      feedback.style.background = '#ffcdd2';
+      feedback.style.color = '#c62828';
+    }
+    feedback.style.display = 'block';
+  }
+
+  function nextG2Question() {
+    if (g2Idx < g2List.length) {
+      g2Idx++;
+      loadG2Question();
+    }
+  }
+
+  // FINAL QUIZ
+  let currentQuizIndex = 0;
+  let quizScore = 0;
+
+  function initQuiz() {
+    currentQuizIndex = 0;
+    quizScore = 0;
+    document.getElementById('quiz-container').style.display = 'block';
+    document.getElementById('quiz-result').style.display = 'none';
+    document.getElementById('quiz-nav').style.display = 'flex';
+    document.getElementById('btn-next-quiz').style.display = 'inline-flex';
+    loadQuizItem();
+  }
+
+  function loadQuizItem() {
+    if (currentQuizIndex >= quizData.length) {
+      showQuizResults();
+      return;
+    }
+    const data = quizData[currentQuizIndex];
+    document.getElementById('quiz-q-num').textContent = `Ερώτηση ${currentQuizIndex + 1}/${quizData.length}`;
+    document.getElementById('quiz-q-text').textContent = data.q;
+    const optsDiv = document.getElementById('quiz-options-list');
+    optsDiv.innerHTML = '';
+    document.getElementById('quiz-feedback').style.display = 'none';
+
+    data.options.forEach((opt, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'quiz-btn';
+      btn.textContent = opt;
+      btn.onclick = () => checkQuizAnswer(idx, data);
+      optsDiv.appendChild(btn);
+    });
+  }
+
+  function checkQuizAnswer(selected, data) {
+    const feedback = document.getElementById('quiz-feedback');
+    const allBtns = document.getElementById('quiz-options-list').children;
+    for(let b of allBtns) b.disabled = true;
+
+    if (selected === data.correct) {
+      allBtns[selected].classList.add('correct');
+      quizScore++;
+      feedback.textContent = "Σωστά!";
+      feedback.style.background = '#c8e6c9';
+      feedback.style.color = '#2e7d32';
+    } else {
+      allBtns[selected].classList.add('wrong');
+      allBtns[data.correct].classList.add('correct');
+      feedback.textContent = "Λάθος.";
+      feedback.style.background = '#ffcdd2';
+      feedback.style.color = '#c62828';
+    }
+    feedback.style.display = 'block';
+  }
+
+  function nextQuizItem() {
+    currentQuizIndex++;
+    loadQuizItem();
+  }
+
+  function showQuizResults() {
+    document.getElementById('quiz-container').style.display = 'none';
+    document.getElementById('btn-next-quiz').style.display = 'none';
+    const resDiv = document.getElementById('quiz-result');
+    resDiv.style.display = 'block';
+    
+    let msg = "";
+    const percent = (quizScore / quizData.length) * 100;
+    if (percent === 100) msg = "Άριστα! 🌟";
+    else if (percent >= 80) msg = "Πολύ καλά! 👍";
+    else msg = "Μπορείς και καλύτερα! 📚";
+
+    document.getElementById('final-score-display').innerHTML = `Πέτυχες <strong>${quizScore}</strong> στις ${quizData.length}.<br>${msg}`;
+  }
+</script>
+</body>
+</html>
